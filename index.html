@@ -1,0 +1,60 @@
+
+<html>
+
+<script>
+   function sendNotification() {
+      
+      var mess = document.getElementById('message').value;
+      var tit = document.getElementById('title').value;
+      var apik = document.getElementById('apikey').value;
+      
+   const userAction = async () => {
+    const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      body: JSON.stringify(
+         { "condition": "!('any' in topics)",
+ "data" : {
+     "body" : mess,
+     "title": tit
+ }
+}),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'key=' + apik
+      }
+    });
+    
+      // TODO should be headers too
+    document.getElementById('response').body = response.body.text();
+   }
+    
+    userAction();
+      
+      // remove to avoid double send (userAction is async - will be done exactly after )
+      document.getElementById('apikey').value = '';
+      document.getElementById('title').value = '';
+      document.getElementById('message').value = '';
+      return false;
+   }
+   
+</script>
+
+<body>
+
+ <form onsubmit="return sendNotification();">
+   <label>API key <input type="text" id="apikey" autocomplete="off" required></label> 
+   <br>
+   <label>Notification title <input type="text" id="title" required></label>     
+   <br>
+   <label>Notification message <input type="text" id="message" required></label> 
+   <br>
+   <button type="submit">Send</button>        
+    <hr>
+    <textarea readonly id="response" rows=30 cols=40></textarea>
+ </form>
+   
+  
+ 
+</body>
+
+</html>
