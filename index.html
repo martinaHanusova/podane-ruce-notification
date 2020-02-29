@@ -1,15 +1,23 @@
 
 <html>
-
+<head>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<body>
 <script>
    function sendNotification() {
-      
-      var mess = document.getElementById('message').value;
-      var tit = document.getElementById('title').value;
-      var apik = document.getElementById('apikey').value;
-      
+    const sendButton = document.getElementById("send")
+    const mess = document.getElementById('message').value;
+    const tit = document.getElementById('title').value;
+    const apik = document.getElementById('apikey').value;
+    const alertElement = document.getElementById("alert");
+    if (sendButton.disabled) {
+      return false;
+    }
+    sendButton.disabled = true;
+    alertElement.classList.add("d-none")
    const userAction = async () => {
-    const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+   fetch('https://fcm.googleapis.com/fcm/send', {
       method: 'POST',
       body: JSON.stringify(
          { "condition": "!('any' in topics)",
@@ -22,39 +30,64 @@
         'Content-Type': 'application/json',
         'Authorization': 'key=' + apik
       }
-    });
-    
-      // TODO should be headers too
-    document.getElementById('response').body = response.text();
+    }).then(function(err) {
+
+      alertElement.classList.remove("alert-success")
+      alertElement.classList.remove("alert-danger")
+      if (err.status <= 299) {
+          alertElement.innerText="Sent"
+          alertElement.classList.remove("d-none")
+          alertElement.classList.add("alert-success")
+          document.getElementById('apikey').value = '';
+          document.getElementById('title').value = '';
+          document.getElementById('message').value = '';
+      } else if (err.status == 401) {
+          alertElement.innerText="Wrong API key"
+          alertElement.classList.remove("d-none")
+          alertElement.classList.add("alert-danger")
+      } else {
+        alertElement.innerText="Error " + err.status
+        alertElement.classList.remove("d-none")
+        alertElement.classList.add("alert-danger")
+      }
+      sendButton.disabled = false;
+  }).
+    catch(function(err) {
+      alertElement.innerText="Error"
+      alertElement.classList.remove("d-none")
+      alertElement.classList.add("alert-danger")
+      sendButton.disabled = false;
+  });
    }
-    
+
     userAction();
-      
+
       // remove to avoid double send (userAction is async - will be done exactly after )
-      document.getElementById('apikey').value = '';
-      document.getElementById('title').value = '';
-      document.getElementById('message').value = '';
+
       return false;
    }
-   
+
 </script>
-
-<body>
-
- <form onsubmit="return sendNotification();">
-   <label>API key <input type="text" id="apikey" autocomplete="off" required></label> 
-   <br>
-   <label>Notification title <input type="text" id="title" required></label>     
-   <br>
-   <label>Notification message <input type="text" id="message" required></label> 
-   <br>
-   <button type="submit">Send</button>        
-    <hr>
-    <textarea readonly id="response" rows=30 cols=40></textarea>
+<div class="container mt-5">
+  <h1>Čára Notifikace</h1>
+  <div class="alert alert-danger d-none" id="alert" role="alert">
+</div>
+ <form class="mt-3" onsubmit="return sendNotification();">
+   <div class="form-group">
+   <label for="apikey">API key</label>
+   <input type="text" id="apikey" class="form-control" placeholder="API key" required>
+ </div>
+  <div class="form-group">
+   <label for="title">Notification title</label>
+    <input type="text" id="title" class="form-control" placeholder="Notification title" required>
+ </div>
+ <div class="form-group">
+   <label for="message">Notification message</label>
+   <textarea rows="3" class="form-control" id="message" placeholder="Notification message" required></textarea>
+</div>
+   <button id="send" type="submit" class="btn btn-primary">Send</button>
  </form>
-   
-  
- 
+</div>
 </body>
 
 </html>
