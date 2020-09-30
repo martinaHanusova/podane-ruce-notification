@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
    fetch('https://fcm.googleapis.com/fcm/send', {
       method: 'POST',
       body: JSON.stringify(
-         { "condition": "!('any' in topics)",
+         { "to" : "/topics/all",
  "data" : {
      "body" : mess,
      "title": tit
