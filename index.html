@@ -18,6 +18,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const mess = document.getElementById('message').value;
     const tit = document.getElementById('title').value;
     const apik = document.getElementById('apikey').value;
+    const topic = document.getElementById('topic').value;
     const alertElement = document.getElementById("alert");
     try{
         window.localStorage.setItem("apikey", apik)
@@ -31,7 +32,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
    fetch('https://fcm.googleapis.com/fcm/send', {
       method: 'POST',
       body: JSON.stringify(
-         { "to" : "/topics/all",
+         { "to" : "/topics/" + topic,
  "data" : {
      "body" : mess,
      "title": tit
@@ -87,6 +88,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
    <div class="form-group">
    <label for="apikey">API key</label>
    <input type="text" id="apikey" class="form-control" placeholder="API key" required>
+ </div>
+    <div class="form-group">
+   <label for="apikey">Topic</label>
+   <input type="text" id="topic" class="form-control" placeholder="topis" required>
  </div>
   <div class="form-group">
    <label for="title">Notification title</label>
