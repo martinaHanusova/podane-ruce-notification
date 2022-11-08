@@ -29,7 +29,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     sendButton.disabled = true;
     alertElement.classList.add("d-none")
    const userAction = async () => {
-   fetch('https://fcm.googleapis.com/fcm/send', {
+   fetch('https://fcm.googleapis.com/v1/projects/cara-dev/messages:send', {
       method: 'POST',
       body: JSON.stringify(
          { "to" : "/topics/" + topic,
@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 }),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'key=' + apik
+        'Authorization': 'Bearer ' + apik
       }
     }).then(function(err) {
 
